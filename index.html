@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب مدة الإجازة</title>
+    <!-- إضافة مكتبة Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>&& اعداد: باحث اقدم / نزار محمد كاظم الكعبي && مديرية ادارة الموارد البشرية / مديرية الموظفين المدنيين</h1>
+
+        <!-- قسم حساب المدة بين بوكس 1 إلى بوكس 5 -->
+        <div class="section">
+            <h2>حساب المدة الكلية والمستقطعة والمتبقية من الاجازة</h2>
+
+            <!-- حقل اكتب عدد الأيام -->
+            <div>
+                <label for="textbox11">اكتب عدد الأيام:</label>
+                <input type="number" id="textbox11">
+            </div>
+
+            <!-- الراديو بوتنز -->
+            <div>
+                <label>خيارات إضافية :</label>
+                <div>
+                    <input type="radio" id="radio1" name="duration" value="15"> 15 يومًا
+                    <input type="radio" id="radio2" name="duration" value="30"> شهر
+                    <input type="radio" id="radio3" name="duration" value="180"> ستة أشهر
+                    <input type="radio" id="radio4" name="duration" value="365"> سنة
+                </div>
+            </div>
+
+            <div>
+                <label for="textbox1">تاريخ الانفكاك:</label>
+                <input type="text" id="textbox1" required>
+            </div>
+            <div>
+                <label for="textbox2">تاريخ انتهاء الإجازة:</label>
+                <input type="text" id="textbox2" required>
+            </div>
+            <div>
+                <label for="textbox3">تاريخ المباشرة:</label>
+                <input type="text" id="textbox3">
+            </div>
+
+            <!-- زر حساب المدة -->
+            <button id="calculateButton">اضغط لحساب المدة المتبقية </button>
+            <div id="message-duration" class="message"></div>
+        </div>
+
+        <!-- عرض النتائج -->
+        <div class="section results">
+            <h3>نتائج الحساب</h3>
+            <div>
+                <label>المدة الكلية:</label>
+                <span id="resultTextBox4"></span>
+            </div>
+            <div>
+                <label>المدة المستقطعة:</label>
+                <span id="resultTextBox5"></span>
+            </div>
+            <div>
+                <label>المدة المتبقية:</label> <!-- تم تغيير الاسم من "المدة النهائية" إلى "المدة المتبقية" -->
+                <span id="resultTextBox6"></span>
+            </div>
+        </div>
+
+        <!-- قسم حساب 51 يوم -->
+        <div class="section">
+            <h2>حساب استحقاق اجازة الامومة</h2>
+            <div>
+                <label for="textbox7">اكتب هنا تاريخ اجازة مابعد الوضع:</label>
+                <input type="text" id="textbox7">
+            </div>
+            <div>
+                <label>تاريخ استحقاق اجازة الامومة :</label>
+                <span id="result51days"></span>
+            </div>
+            <button id="calculate51Button">اضغط لحساب استحقاق اجازة الامومة</button>
+            <div id="message-51days" class="message"></div>
+        </div>
+
+        <!-- حساب الرصيد -->
+        <div class="section">
+            <h2>حساب الرصيد المتراكم من الاجازات الاعتيادية</h2>
+            <div>
+                <label for="textbox8">تاريخ التعيين:</label>
+                <input type="text" id="textbox8">
+            </div>
+            <div>
+                <label for="textbox9">تاريخ اليوم الحالي:</label>
+                <input type="text" id="textbox9">
+            </div>
+            <div>
+                <label for="textbox10">عدد الإجازات المستخدمة:</label>
+                <input type="number" id="textbox10">
+            </div>
+            <div>
+                <label>الرصيد المتبقي بالايام :</label>
+                <span id="label12"></span>
+            </div>
+            <div>
+                <label>عدد سنوات الخدمة يوم شهر سنة:</label>
+                <span id="label13"></span>
+            </div>
+            <button id="calculateBalanceButton">حساب الرصيد المتراكم</button>
+            <div id="message-balance" class="message"></div>
+        </div>
+
+        <!-- زر إعادة تعيين -->
+        <button id="resetButton">إعادة تعيين كافة الحقول</button>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // تطبيق مكتبة Flatpickr على حقول التاريخ
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#textbox1", {
+                dateFormat: "Y-m-d", // تنسيق التاريخ
+                locale: "ar" // اللغة العربية
+            });
+            
+            flatpickr("#textbox2", {
+                dateFormat: "Y-m-d",
+                locale: "ar"
+            });
+            
+            flatpickr("#textbox3", {
+                dateFormat: "Y-m-d",
+                locale: "ar"
+            });
+
+            flatpickr("#textbox7", {
+                dateFormat: "Y-m-d",
+                locale: "ar"
+            });
+
+            flatpickr("#textbox8", {
+                dateFormat: "Y-m-d",
+                locale: "ar"
+            });
+
+            flatpickr("#textbox9", {
+                dateFormat: "Y-m-d",
+                locale: "ar"
+            });
+        });
+
+        // حساب المدة بين تاريخ الانفكاك وتاريخ انتهاء الإجازة
+        document.getElementById('calculateButton').addEventListener('click', function() {
+            let dateOfEntitlement = new Date(document.getElementById('textbox1').value);
+            let endOfLeave = new Date(document.getElementById('textbox2').value);
+            let startOfResumption = new Date(document.getElementById('textbox3').value);
+            let additionalDays = document.getElementById('textbox11').value;
+            let messageDuration = document.getElementById('message-duration');
+            let resultTextBox4 = document.getElementById('resultTextBox4'); // المدة الكلية
+            let resultTextBox5 = document.getElementById('resultTextBox5'); // المدة المستقطعة
+            let resultTextBox6 = document.getElementById('resultTextBox6'); // المدة المتبقية
+
+            // إعادة تعيين الرسائل والنتائج السابقة
+            messageDuration.innerText = '';
+            resultTextBox4.innerText = '';
+            resultTextBox5.innerText = '';
+            resultTextBox6.innerText = '';
+
+            // التحقق من صحة التواريخ
+            if (!dateOfEntitlement) {
+                messageDuration.innerText = 'يرجى إدخال تاريخ الانفكاك.';
+                return;
+            }
+
+            // التحقق مما إذا كانت أحد الراديو بوتنز محددة
+            let selectedRadio = document.querySelector('input[name="duration"]:checked');
+            if (selectedRadio) {
+                let value = parseInt(selectedRadio.value); // القيمة المأخوذة من الراديو بوتن (عدد الأيام أو الأشهر أو السنوات)
+
+                // إضافة القيمة المختارة إلى التاريخ (15 يومًا، 1 شهر، 6 أشهر، سنة)
+                if (value === 15) {
+                    dateOfEntitlement.setDate(dateOfEntitlement.getDate() + 15);
+                } else if (value === 30) {
+                    dateOfEntitlement.setMonth(dateOfEntitlement.getMonth() + 1);
+                } else if (value === 180) {
+                    dateOfEntitlement.setMonth(dateOfEntitlement.getMonth() + 6);
+                } else if (value === 365) {
+                    dateOfEntitlement.setFullYear(dateOfEntitlement.getFullYear() + 1);
+                }
+
+                // تحديث "تكست بوكس 2" مع التاريخ الجديد
+                document.getElementById('textbox2').value = dateOfEntitlement.toISOString().split('T')[0];
+                endOfLeave = dateOfEntitlement; // تعيين نهاية الإجازة بناءً على الراديو بوتنز
+            }
+
+            // إذا تم إدخال عدد الأيام الإضافية، يتم تعديل تاريخ نهاية الإجازة
+            if (additionalDays && !isNaN(additionalDays)) {
+                let adjustedEndDate = new Date(document.getElementById('textbox1').value);
+                adjustedEndDate.setDate(adjustedEndDate.getDate() + parseInt(additionalDays));
+                document.getElementById('textbox2').value = adjustedEndDate.toISOString().split('T')[0];
+                endOfLeave = adjustedEndDate; // تعيين نهاية الإجازة بناءً على عدد الأيام
+            } else if (additionalDays && isNaN(additionalDays)) {
+                messageDuration.innerText = 'يرجى إدخال رقم صحيح للأيام الإضافية.';
+                return;
+            }
+
+            // حساب الفرق بين التواريخ
+            if (endOfLeave) {
+                let totalDuration = calculateDateDifference(new Date(document.getElementById('textbox1').value), endOfLeave);
+                resultTextBox4.innerText = totalDuration;
+
+                if (startOfResumption) {
+                    if (startOfResumption <= new Date(document.getElementById('textbox1').value) || startOfResumption >= endOfLeave) {
+                        messageDuration.innerText = 'يجب أن يكون تاريخ المباشرة أكبر من تاريخ الانفكاك وأقل من تاريخ نهاية الإجازة.';
+                        return;
+                    }
+                    let deductedDuration = calculateDateDifference(new Date(document.getElementById('textbox1').value), startOfResumption);
+                    resultTextBox5.innerText = deductedDuration;
+
+                    let finalDuration = calculateDateDifference(startOfResumption, endOfLeave);
+                    resultTextBox6.innerText = finalDuration;
+                }
+            }
+        });
+
+        // دالة لحساب الفرق بين التواريخ
+        function calculateDateDifference(startDate, endDate) {
+            let yearsDifference = endDate.getFullYear() - startDate.getFullYear();
+            let monthsDifference = endDate.getMonth() - startDate.getMonth();
+            let daysDifference = endDate.getDate() - startDate.getDate();
+
+            if (daysDifference < 0) {
+                monthsDifference--;
+                daysDifference += new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getDate();
+            }
+
+            if (monthsDifference < 0) {
+                yearsDifference--;
+                monthsDifference += 12;
+            }
+
+            return `${yearsDifference} سنة ${monthsDifference} شهر ${daysDifference} يوم`;
+        }
+
+        // حساب 51 يوم
+        document.getElementById('calculate51Button').addEventListener('click', function() {
+            let date51 = new Date(document.getElementById('textbox7').value);
+            let message51days = document.getElementById('message-51days');
+            let result51days = document.getElementById('result51days');
+
+            // إعادة تعيين الرسائل السابقة
+            message51days.innerText = '';
+            result51days.innerText = '';
+
+            if (!date51) {
+                message51days.innerText = 'يرجى إدخال تاريخ بداية.';
+                return;
+            }
+
+            // حساب تاريخ النهاية بعد 51 يومًا
+            let newDate51 = new Date(date51);
+            newDate51.setDate(newDate51.getDate() + 51);
+            result51days.innerText = newDate51.toISOString().split('T')[0];
+        });
+
+        // حساب الرصيد
+        document.getElementById('calculateBalanceButton').addEventListener('click', function() {
+            let hireDate = new Date(document.getElementById('textbox8').value);
+            let currentDate = new Date(document.getElementById('textbox9').value);
+            let usedLeave = document.getElementById('textbox10').value;
+            let label12 = document.getElementById('label12');
+            let label13 = document.getElementById('label13');
+            let messageBalance = document.getElementById('message-balance');
+
+            // إعادة تعيين الرسائل والنتائج السابقة
+            label12.innerText = '';
+            label13.innerText = '';
+            messageBalance.innerText = '';
+
+            // التحقق من صحة المدخلات
+            if (!hireDate || !currentDate) {
+                messageBalance.innerText = 'يرجى إدخال تاريخ التعيين والتاريخ الحالي.';
+                return;
+            }
+
+            if (hireDate > currentDate) {
+                messageBalance.innerText = 'يجب أن يكون التاريخ الحالي أكبر من أو يساوي تاريخ التعيين.';
+                return;
+            }
+
+            if (usedLeave && isNaN(usedLeave)) {
+                messageBalance.innerText = 'يرجى إدخال عدد الإجازات المستخدمة بشكل صحيح.';
+                return;
+            }
+
+            // حساب المدة بين تاريخ التعيين والتاريخ الحالي
+            let totalDays = calculateDateDifferenceInDays(hireDate, currentDate);
+            let yearsDifference = currentDate.getFullYear() - hireDate.getFullYear();
+            let monthsDifference = currentDate.getMonth() - hireDate.getMonth();
+            let daysDifference = currentDate.getDate() - hireDate.getDate();
+
+            if (daysDifference < 0) {
+                monthsDifference--;
+                daysDifference += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+            }
+
+            if (monthsDifference < 0) {
+                yearsDifference--;
+                monthsDifference += 12;
+            }
+
+            // حساب الرصيد المتاح بناءً على عدد الأيام
+            let yearsInDays = yearsDifference * 36;
+            let monthsInDays = monthsDifference * 3;
+            let daysInDays = Math.floor(daysDifference / 10); // يتم حساب يوم واحد لكل 10 أيام
+
+            let totalDaysAvailable = yearsInDays + monthsInDays + daysInDays - (usedLeave ? parseInt(usedLeave) : 0);
+
+            // عرض النتائج
+            label12.innerText = totalDaysAvailable.toString();
+            label13.innerText = `${yearsDifference} سنة ${monthsDifference} شهر ${daysDifference} يوم`;
+        });
+
+        // حساب الفرق بين التواريخ بالأيام (رقم الأيام)
+        function calculateDateDifferenceInDays(startDate, endDate) {
+            return Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+        }
+
+        // زر إعادة تعيين
+        document.getElementById('resetButton').addEventListener('click', function() {
+            // مسح جميع القيم
+            document.getElementById('textbox1').value = '';
+            document.getElementById('textbox2').value = '';
+            document.getElementById('textbox3').value = '';
+            document.getElementById('textbox7').value = '';
+            document.getElementById('textbox8').value = '';
+            document.getElementById('textbox9').value = '';
+            document.getElementById('textbox10').value = '';
+            document.getElementById('textbox11').value = '';
+
+            // مسح النتائج
+            document.getElementById('resultTextBox4').innerText = '';
+            document.getElementById('resultTextBox5').innerText = '';
+            document.getElementById('resultTextBox6').innerText = '';
+            document.getElementById('result51days').innerText = '';
+            document.getElementById('label12').innerText = '';
+            document.getElementById('label13').innerText = '';
+            document.getElementById('message-duration').innerText = '';
+            document.getElementById('message-51days').innerText = '';
+            document.getElementById('message-balance').innerText = '';
+
+            // إعادة تعيين الراديو بوتنز
+            document.querySelectorAll('input[name="duration"]').forEach(function(radio) {
+                radio.checked = false;
+            });
+        });
+    </script>
+</body>
+</html>
